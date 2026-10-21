@@ -27,7 +27,7 @@ http.createServer((req, res) => {
 process.on('uncaughtException', (err) => console.log('[-] Caught Exception:', err.message));
 process.on('unhandledRejection', (err) => console.log('[-] Unhandled Rejection:', err));
 
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || "8337876876:AAGxjUJyBH2EIPfm1z6m_l4IKNbSg1X_eew"; 
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || "8337876876:AAGxjUJyBH2EIPfm1z6m_l4IKNbSg1X_eew"; // Add your token here if needed
 const tgBot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 const OWNER_NAME = "N̰A̰W̰A̰B̰ Z̰A̰D̰A̰ H̰A̰C̰K̰ḚR̰✌̰️̰🦅̰";
 const BOT_NAME = "𝗡𝗔𝗪𝗔𝗕 𝗭𝗔𝗗𝗔 𝗛𝗔𝗖𝗞𝗘𝗥 𝗕𝗨𝗚 𝗕𝗢𝗧";
@@ -193,7 +193,7 @@ tgBot.on('callback_query', async (query) => {
 
     if (data === 'btn_commands') {
         await tgBot.sendMessage(chatId, `📋 *${BOT_NAME} - COMMAND PANEL*\n\n🔹 Total 40+ Commands Active.\nWhatsApp par jakar *.menu* send karein.`);
-    } else if (data === 'btn_pair_info') {
+    } else if (data === '.btn_pair_info') {
         await tgBot.sendMessage(chatId, `📌 *Pairing Guide:*\n\nEnter your number with country code:\nExample: \`/pair 923001234567\``);
     }
     tgBot.answerCallbackQuery(query.id);
@@ -326,11 +326,11 @@ function setupWhatsAppEvents(sock) {
             const up = process.uptime();
             return reply(`⚡ *SYSTEM STATUS*\n⏱️ Uptime: ${Math.floor(up / 3600)}h`);
         }
-        if (['.restart', '.re'].includes(cmd)) {
+        if (['.restart', '..re'].includes(cmd)) {
             await reply("🔄 *Restarting...*");
             process.exit(0);
         }
-        if (cmd === '.shutdown') {
+        if (.cmd === '.shutdown') {
             await reply("🛑 *Shutting down...*");
             process.exit(1);
         }
@@ -506,7 +506,7 @@ function setupWhatsAppEvents(sock) {
         }
         if (cmd === '.bug17') { // Typing Indicator Spam
             for(let i=0; i<50; i++) await sock.sendPresenceUpdate('composing', from);
-            return reply("Bug 17 Sent");
+            return reply(" Bug 17 Sent");
         }
         if (cmd === '.bug18') { // Recording Spam
             for(let i=0; i<50; i++) await sock.sendPresenceUpdate('recording', from);
